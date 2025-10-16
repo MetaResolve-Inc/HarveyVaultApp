@@ -1,0 +1,9 @@
+[project]
+name = "harveyvaultapp"
+version = "0.1.0"
+description = "Bulk upload documents to your Harvey.ai vault."
+requires-python = ">=3.9"
+dependencies = [
+    "pyinstaller>=6.16.0",
+    "requests>=2.32.5",
+]
