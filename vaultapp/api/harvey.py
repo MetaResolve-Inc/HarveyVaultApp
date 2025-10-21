@@ -2,18 +2,18 @@ import logging
 from http import HTTPMethod
 from typing import List, Dict, Any, Literal
 
-from vaultapp.api.request import ApiRequest
+from vaultapp.api.request import HarveyRequest
 
 logger = logging.getLogger(__name__)
 
 class Harvey:
     def __init__(self, auth_key, region):
-        self.requester = ApiRequest(auth_key, region)
+        self.requester = HarveyRequest(auth_key, region)
 
 
-    def get_projects(self, page=1, per_page=100) -> List[Dict[str, Any]]:
+    def get_paginated_projects(self, page=1, per_page=100) -> Dict[str, Any]:
         data = self.requester.exec(f"/vault/workspace/projects?page={page}&per_page={per_page}", HTTPMethod.GET)
-        return data["response"]["content"]["projects"]
+        return data["response"]["content"]
 
     def get_project_files(self, project_id) -> List[str]:
         data = self.requester.exec(f"/vault/get_metadata/{project_id}", HTTPMethod.GET)

@@ -1,3 +1,3 @@
 from .harvey import Harvey
-from .request import ApiRequest as HarveyRequest
-from .region import ApiRegion as HarveyRegion
+from .request import HarveyRequest
+from .region import HarveyRegion
