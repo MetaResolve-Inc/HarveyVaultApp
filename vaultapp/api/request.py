@@ -14,14 +14,14 @@ class HarveyRequest:
         self.auth_key = auth_key
 
 
-    def exec(self, endpoint: str, method: HTTPMethod, data=None):
+    def exec(self, endpoint: str, method: HTTPMethod, data=None, files=None):
         headers = {
             'Authorization': f'Bearer {self.auth_key}'
         }
 
         url = f"{self.region}{endpoint}"
 
-        response = requests.request(method, url, headers=headers, data=data)
+        response = requests.request(method, url, headers=headers, data=data, files=files)
 
         # Handle errors without an 'error' key in the response
         response.raise_for_status()

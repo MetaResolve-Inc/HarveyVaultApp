@@ -19,23 +19,19 @@ class Harvey:
         data = self.requester.exec(f"/vault/get_metadata/{project_id}", HTTPMethod.GET)
         return data["file_ids"]
 
-    def upload_files(self, project, files: List[str], paths: List[str], duplicate_mode: Literal["skip", "replace"]):
-        if len(files) != len(paths):
-            logger.error(f"Attempted to upload {len(files)} files but {len(paths)} paths were provided.")
+    def upload_files(self, project, in_files: List[str], in_paths: List[str], duplicate_mode: Literal["skip", "replace"]):
+        if len(in_files) != len(in_paths):
+            logger.error(f"Attempted to upload {len(in_files)} files but {len(in_paths)} paths were provided.")
             raise ValueError("Number of files and project paths must be the same")
 
-        batch_size = 50
-        responses = []
+        if len(in_files) > 50:
+            raise ValueError("Maximum of 50 files can be uploaded at a time")
 
-        for i in range(0, len(files), batch_size):
-            batch_files = files[i:i+batch_size]
-            batch_paths = paths[i:i+batch_size]
-            data = {
-                "files": batch_files,
-                "file_paths": batch_paths,
-                "duplicate_mode": duplicate_mode,
-            }
-            response = self.requester.exec(f"/vault/upload_files/{project}", HTTPMethod.POST, data=data)
-            responses.append(response)
+        files = [("files", open(file, "rb")) for file in in_files]
 
-        return responses
+        payload = {
+            "file_paths": in_paths,
+            "duplicate_mode": duplicate_mode,
+        }
+        data = self.requester.exec(f"/vault/upload_files/{project}", HTTPMethod.POST, data=payload, files=files)
+        return data["file_ids"]

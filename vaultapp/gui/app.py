@@ -11,7 +11,7 @@ class GuiApp(tk.Tk):
 
         self.title("Harvey.ai Vault App")
 
-        self.resizable(False, True)
+        self.resizable(False, False)
 
         self.api_key = tk.StringVar()
         self.api_region = tk.StringVar()
