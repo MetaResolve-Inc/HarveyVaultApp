@@ -34,4 +34,4 @@ class Harvey:
             "duplicate_mode": duplicate_mode,
         }
         data = self.requester.exec(f"/vault/upload_files/{project}", HTTPMethod.POST, data=payload, files=files)
-        return data["file_ids"]
+        return data

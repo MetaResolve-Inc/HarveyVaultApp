@@ -70,8 +70,6 @@ class UploadView(tk.Frame):
 
         harvey = Harvey(self.controller.api_key.get(), HarveyRegion[self.controller.api_region.get()].value)
 
-        file_ids = []
-
         for i, batch in enumerate(batched_files):
             self.progress_bar.step(i + 0.9)
 
@@ -81,7 +79,6 @@ class UploadView(tk.Frame):
             while is_uploading:
                 try:
                     response = harvey.upload_files(self.controller.selected_project.get(), list(batch), batched_paths, "skip")
-                    file_ids.extend(response)
                     is_uploading = False
                 except HTTPError as e:
                     if e.response.status_code == 429:
@@ -94,7 +91,7 @@ class UploadView(tk.Frame):
 
         # Done uploading. Reset UI.
         self._reset_upload_ui()
-        messagebox.showinfo("Upload Complete", f"Successfully uploaded {len(file_ids)} files")
+        messagebox.showinfo("Upload Complete", f"Successfully uploaded files")
 
     def handle_back(self):
         self.controller.show_frame("ProjectsView")
