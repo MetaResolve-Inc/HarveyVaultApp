@@ -81,7 +81,7 @@ class UploadView(tk.Frame):
             while is_uploading:
                 try:
                     response = harvey.upload_files(self.controller.selected_project.get(), list(batch), batched_paths, "skip")
-                    file_ids.extend(response["file_ids"])
+                    file_ids.extend(response)
                     is_uploading = False
                 except HTTPError as e:
                     if e.response.status_code == 429:
