@@ -3,8 +3,8 @@ Update environment with dependencies:
 `uv sync`
 
 ## Building
-Activate the virtual environment:
-`source .venv/bin/activate`
+1. Activate the virtual environment:
+- Linux/macOS: `source .venv/bin/activate`
+- Windows: `.\.venv\Scripts\activate`
 
-Run the build command:
-`uvx pyinstaller HarveyVaultApp.spec`
+2. Run the build command: `pyinstaller HarveyVaultApp.spec`
