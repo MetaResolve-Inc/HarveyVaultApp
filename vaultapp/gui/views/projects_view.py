@@ -1,9 +1,12 @@
+import logging
 import tkinter as tk
 from tkinter import ttk, messagebox
 
 from requests import HTTPError
 
 from vaultapp.api import Harvey, HarveyRegion
+
+logger = logging.getLogger(__name__)
 
 
 def _format_size(size):
@@ -12,6 +15,7 @@ def _format_size(size):
             return f"{size:3.1f}{unit}"
         size /= 1024.0
     return f"{size:.1f}Yi{size}"
+
 
 class ProjectsView(tk.Frame):
     def __init__(self, parent, controller):
@@ -70,12 +74,14 @@ class ProjectsView(tk.Frame):
             paginated_projects = harvey.get_paginated_projects(self.page, per_page=self.per_page)
         except HTTPError as e:
             if e.response.status_code == 429:
-                wait_time = int(e.response.headers['Retry-After']) if e.response.headers['Retry-After'] else 60
+                retry_after = e.response.headers['Retry-After']
+                logger.warning(f"Rate limited by Harvey API for {retry_after + " seconds" if retry_after else "an unknown amount of time"}.")
                 messagebox.showerror(
                     "Rate Limited",
-                    f"The harvey API rate limit has been reached. Please try again in {wait_time} seconds."
+                    f"The harvey API rate limit has been reached. Please try again in {retry_after if retry_after else 60} seconds."
                 )
                 return
+            logger.error(f"Error loading projects: {e}")
             messagebox.showerror("Error", f"Error loading projects: {e}")
             return
 

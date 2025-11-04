@@ -6,10 +6,10 @@ from vaultapp.api.request import HarveyRequest
 
 logger = logging.getLogger(__name__)
 
+
 class Harvey:
     def __init__(self, auth_key, region):
         self.requester = HarveyRequest(auth_key, region)
-
 
     def get_paginated_projects(self, page=1, per_page=100) -> Dict[str, Any]:
         data = self.requester.exec(f"/vault/workspace/projects?page={page}&per_page={per_page}", HTTPMethod.GET)
@@ -19,12 +19,14 @@ class Harvey:
         data = self.requester.exec(f"/vault/get_metadata/{project_id}", HTTPMethod.GET)
         return data["file_ids"]
 
-    def upload_files(self, project, in_files: List[str], in_paths: List[str], duplicate_mode: Literal["skip", "replace"]):
+    def upload_files(self, project, in_files: List[str], in_paths: List[str],
+                     duplicate_mode: Literal["skip", "replace"]):
         if len(in_files) != len(in_paths):
-            logger.error(f"Attempted to upload {len(in_files)} files but {len(in_paths)} paths were provided.")
+            logger.error(f"Attempted to upload {len(in_files)} files when {len(in_paths)} paths were provided.")
             raise ValueError("Number of files and project paths must be the same")
 
         if len(in_files) > 50:
+            logger.error(f"Attempted to upload {len(in_files)} files (max 50).")
             raise ValueError("Maximum of 50 files can be uploaded at a time")
 
         files = [("files", open(file, "rb")) for file in in_files]
@@ -34,4 +36,14 @@ class Harvey:
             "duplicate_mode": duplicate_mode,
         }
         data = self.requester.exec(f"/vault/upload_files/{project}", HTTPMethod.POST, data=payload, files=files)
-        return data
+
+        # Incorrectly documented API response formats at https://developers.harvey.ai/api-reference/vault/upload-files-to-project
+        # The correct format is {"response": {"content": [{"file_ids": [...], "project_id": ... }]}}
+        # Note the array wrapping the contained response content.
+        response_contents = data["response"]["content"]
+        flat = [file_id for file_ids in response_contents for file_id in file_ids["file_ids"]]
+
+        return {
+            "project_id": response_contents[0]["project_id"],
+            "file_ids": flat
+        }

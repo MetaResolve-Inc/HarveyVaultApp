@@ -1,12 +1,17 @@
+import logging
 import tkinter as tk
 
-from vaultapp.gui.views import ProjectsView
 from vaultapp.gui.views import ConfigView
+from vaultapp.gui.views import ProjectsView
 from vaultapp.gui.views import UploadView
+
+logger = logging.getLogger(__name__)
 
 
 class GuiApp(tk.Tk):
     def __init__(self, *args, **kwargs):
+        logger.info("Starting UI.")
+
         tk.Tk.__init__(self, *args, **kwargs)
 
         self.title("Harvey.ai Vault App")
@@ -42,5 +47,6 @@ class GuiApp(tk.Tk):
         self.deiconify()
 
     def show_frame(self, page_name):
+        logger.info(f"Showing frame {page_name}.")
         frame = self.frames[page_name]
         frame.tkraise()

@@ -9,10 +9,9 @@ logger = logging.getLogger(__name__)
 
 
 class HarveyRequest:
-    def __init__(self, auth_key: str, region: HarveyRegion=HarveyRegion.NA):
+    def __init__(self, auth_key: str, region: HarveyRegion = HarveyRegion.NA):
         self.region = region
         self.auth_key = auth_key
-
 
     def exec(self, endpoint: str, method: HTTPMethod, data=None, files=None):
         headers = {
@@ -23,8 +22,6 @@ class HarveyRequest:
 
         response = requests.request(method, url, headers=headers, data=data, files=files)
 
-        # Handle errors without an 'error' key in the response
         response.raise_for_status()
 
         return response.json()
-
