@@ -16,7 +16,8 @@ class UploadView(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
 
-        self.batch_size = 50  # Max 50
+        #  TODO: Make batch size configurable.
+        self.batch_size = 20  # Max 50
         self.file_list: List[str] = []
 
         tk.Label(self, text="Upload Files").grid(row=0, column=0, sticky='w')
